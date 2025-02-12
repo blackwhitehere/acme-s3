@@ -3,6 +3,7 @@ import logging
 from dotenv import load_dotenv
 
 from ._main import main
+from .s3 import S3Client
 
 load_dotenv()
 

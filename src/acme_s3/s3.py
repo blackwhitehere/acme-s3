@@ -54,15 +54,16 @@ def handle_list_objects_error(e: ClientError, bucket: str, prefix: str) -> None:
 
 class S3Client:
     def __init__(self, bucket: str, max_workers: int = 10, retry_max_attempts: int = 3,
-                 s3_client: boto3.client = None):
+                 boto3_client: boto3.client = None):
         """Initialize S3 client with parallel processing capabilities, retries and progress tracking
 
         Args:
             bucket: S3 bucket name
             max_workers: Maximum number of parallel workers for file operations
             retry_max_attempts: Maximum number of retry attempts for recoverable errors
+            boto3_client: boto3 client to use for s3 operations
         """
-        self.s3 = s3_client or boto3.client("s3")
+        self.s3 = boto3_client or boto3.client("s3")
         self.bucket = bucket
         self.max_workers = max_workers
         self.retry_max_attempts = retry_max_attempts

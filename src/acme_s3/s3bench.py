@@ -127,7 +127,7 @@ def run_benchmark(bucket: str, s3_prefix: str) -> None:
     finally:
         # Delete all benchmark data from S3
         print(f"Cleaning up benchmark data under prefix '{s3_prefix}'")
-        client.delete_prefix(bucket, s3_prefix)
+        client.delete_prefix(s3_prefix)
         
         # Create and display pandas DataFrame
         df = pd.DataFrame(results)

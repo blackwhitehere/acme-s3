@@ -239,20 +239,20 @@ class S3Client:
                 for future in futures:
                     future.result()
 
-    def delete_prefix(self, bucket: str, s3_prefix: str):
+    def delete_prefix(self, s3_prefix: str):
         """Delete all files under a given prefix in S3 bucket with progress tracking"""
-        keys = self.list_objects(bucket, s3_prefix)
+        keys = self.list_objects(s3_prefix)
         self.delete_files(keys)
 
-    def list_objects(self, bucket: str, s3_prefix: str):
+    def list_objects(self, s3_prefix: str):
         """List all objects under a given prefix in S3 bucket"""
         try:
             paginator = self.s3.get_paginator('list_objects_v2')
-            pages = paginator.paginate(Bucket=bucket, Prefix=s3_prefix)
+            pages = paginator.paginate(Bucket=self.bucket, Prefix=s3_prefix)
             keys = []
             for page in pages:
                 for obj in page.get('Contents', []):
                     keys.append(obj['Key'])
             return keys
         except ClientError as e:
-            handle_list_objects_error(e, bucket, s3_prefix)
+            handle_list_objects_error(e, self.bucket, s3_prefix)

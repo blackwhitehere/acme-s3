@@ -244,6 +244,13 @@ class S3Client:
         keys = self.list_objects(s3_prefix)
         self.delete_files(keys)
 
+    @backoff.on_exception(
+        backoff.expo,
+        (ClientError),
+        max_tries=3,
+        giveup=lambda e: e.response["Error"]["Code"]
+        not in ["RequestTimeout", "SlowDown"],
+    )
     def list_objects(self, s3_prefix: str):
         """List all objects under a given prefix in S3 bucket"""
         try:
@@ -256,3 +263,28 @@ class S3Client:
             return keys
         except ClientError as e:
             handle_list_objects_error(e, self.bucket, s3_prefix)
+
+    @backoff.on_exception(
+        backoff.expo,
+        (ClientError),
+        max_tries=3,
+        giveup=lambda e: e.response["Error"]["Code"]
+        not in ["RequestTimeout", "SlowDown"],
+    )
+    def path_exists(self, s3_key: str) -> bool:
+        """Check if a path exists in S3
+
+        Args:
+            s3_key: S3 key to check
+
+        Returns:
+            bool: True if path exists, False otherwise
+        """
+        try:
+            self.s3.head_object(Bucket=self.bucket, Key=s3_key)
+            return True
+        except ClientError as e:
+            if e.response['Error']['Code'] == '404':
+                return False
+            # Re-raise any other errors
+            raise

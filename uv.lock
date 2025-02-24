@@ -3,7 +3,7 @@ requires-python = ">=3.12"
 
 [[package]]
 name = "acme-s3"
-version = "0.0.2"
+version = "0.0.5"
 source = { editable = "." }
 dependencies = [
     { name = "backoff" },

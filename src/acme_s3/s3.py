@@ -152,6 +152,8 @@ class S3Client:
         """Download single file from S3 with retry logic and progress tracking"""
         try:
             logger.debug(f"Downloading file {s3_key} to {local_path}")
+            # Ensure parent directories exist
+            Path(local_path).parent.mkdir(parents=True, exist_ok=True)
             # Get file size for progress bar
             response = self.s3.head_object(Bucket=self.bucket, Key=s3_key)
             file_size = response["ContentLength"]
